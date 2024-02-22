@@ -1,62 +1,118 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react'
-import axios from 'axios'
+import { Box, Button, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
-  const [inputs,setInputs]=useState({
-    name:"",email:"",password:""
-  })
+ const naviagte = useNavigate();
+  const dispath = useDispatch();
+  const [inputs, setInputs] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [isSignup, setIsSignup] = useState(false);
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
-  const sendRequest= async (type="login") =>{
-    const res =await axios.post(`http://localhost:5000/api/user/login`,{
-      name:inputs.name,
-    email:inputs.email,
-    password:inputs.password
-    }).catch(err=>console.log(err));
-    const data =await res.data;
-    return data;
-  }
-  const handleSubmit =(e) =>{
+  const sendRequest = async ()=>{
+    try {
+    const res= await axios.post("http://localhost:5000/api/user/login",{
+      email:inputs.email,
+      password:inputs.password
+
+    })
+    
+  const {data}= await res.data;
+  console.log(data)
+  return data;
+ }catch(error){
+      console.log(error.response.data);
+
+      
+    return error.response; // Or handle the error appropriately
+    }
+  };
+
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log(inputs);
-    sendRequest();
-  }
-  const [isSingup ,setIsSignup]=useState(false) 
+    if(isSignup){
+      sendRequest("signup").then(()=>dispath(authActions.login())).then(()=>naviagte("/blogs"))
+      .then((data)=>console.log(data));
+ }else{
+       sendRequest().then(()=>dispath(authActions.login())).then(()=>naviagte("/blogs"))
+  .then((data)=>console.log(data))
+    }
+   
+  };
   return (
-  
     <div>
       <form onSubmit={handleSubmit}>
         <Box
-        maxWidth={400}
-        display="Flex"
-        flexDirection={"column"}
-        alignItems="center"
-        justifyContent={"centre"}
-        boxShadow="10px 10px 20px #ccc"
-        padding={3}
-        margin='auto'
-        marginTop={5}
-        borderRadius={5} 
+          maxWidth={400}
+          display="flex"
+          flexDirection={"column"}
+          alignItems="center"
+          justifyContent={"center"}
+          boxShadow="10px 10px 20px #ccc"
+          padding={3}
+          margin="auto"
+          marginTop={5}
+          borderRadius={5}
         >
-          <Typography padding={3} textAlign="centre">
-            {isSingup? "SignUp":"Login"}
-            Login
+          <Typography variant="h2" padding={3} textAlign="center">
+            {isSignup ? "Signup" : "Login"}
           </Typography>
-          {isSingup && <  TextField  name="name"onChange={handleChange} value ={inputs.name} placeholder="name" margin='normal'/>}{" "}
-          
-          <TextField name="email" onChange={handleChange} value={inputs.email} type={"email"} placeholder='email'  margin='normal'/>
-          <TextField name="password"onChange={handleChange} value={inputs.password}  type = {"password"}placeholder='password' margin='normal'/>
-          <Button>Submit</Button>
-          <Button onClick={()=>setIsSignup(!isSingup)}>Change To {isSingup ? "Login":"SignUp"} </Button>
+          {isSignup && (
+            <TextField
+              name="name"
+              onChange={handleChange}
+              value={inputs.name}
+              placeholder="Name"
+              margin="normal"
+            />
+          )}{" "}
+          <TextField
+            name="email"
+            onChange={handleChange}
+            value={inputs.email}
+            type={"email"}
+            placeholder="Email"
+            margin="normal"
+          />
+          <TextField
+            name="password"
+            onChange={handleChange}
+            value={inputs.password}
+            type={"password"}
+            placeholder="Password"
+            margin="normal"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ borderRadius: 3, marginTop: 3 }}
+            color="warning"
+          >
+            Submit
+          </Button>
+          <Button
+            onClick={() => setIsSignup(!isSignup)}
+            sx={{ borderRadius: 3, marginTop: 3 }}
+          >
+            Change To {isSignup ? "Login" : "Signup"}
+          </Button>
         </Box>
       </form>
-    
     </div>
-  )
-  }
+  );
+};
+
 export default Auth;
