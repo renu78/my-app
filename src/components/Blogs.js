@@ -17,10 +17,10 @@ const Blogs = () => {
    
   return (
     <div>
-   {blogs && blogs.map((blogs,index)=>(
-       <Blog/>
-   ))}
- 
+      {blogs && blogs.map((blog,index)=>(
+        <Blog />
+      ))}
+  
     </div>
   )
 }
