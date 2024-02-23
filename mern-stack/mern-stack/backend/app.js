@@ -13,9 +13,3 @@ app.use("/api/blog",blogRouter);
 
 
 
-mongoose.connect("mongodb+srv://renukul2002:62yFSslg0cr0Elm4@cluster0.6ovevtk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-.then(()=>app.listen(5000)).then(()=>console.log("connected to database"))
-.catch((err)=> console.log(err));
-
-//62yFSslg0cr0Elm4
-
